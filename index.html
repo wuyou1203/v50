@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>V我50，吃肯德基</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            flicker: 'flicker 1.5s infinite',
+          },
+          keyframes: {
+            flicker: {
+              '0%, 100%': { opacity: 1 },
+              '50%': { opacity: 0.4 },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #fcffd4 0%, #e8ff18 100%);
+      transition: background-color 0.3s ease;
+    }
+    .dark body {
+      background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    }
+  </style>
+</head>
+<body class="text-center text-gray-800 dark:text-gray-200 p-8 min-h-screen flex flex-col justify-center items-center">
+
+  <!-- 闪动标题 -->
+  <h1 class="text-5xl font-extrabold mb-6 animate-flicker text-red-600 dark:text-orange-400">
+    🍗 V我50，吃肯德基！
+  </h1>
+
+  <!-- 动图 -->
+  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbDZ2dTNyMGR4bGRnOGp1Znl2cXpyMGRtaHY2MWdndWZxa2RkbjJrcCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VbnUQpnihPSIgIXuZv/giphy.gif"
+       alt="money incoming" class="w-64 h-64 rounded-xl shadow-lg mb-6 border-4 border-yellow-300">
+
+  <!-- 微信号区域 -->
+  <div class="bg-white/80 dark:bg-gray-800/80 p-6 rounded-xl shadow-md backdrop-blur-md mb-6">
+    <p class="text-lg mb-2 font-mono">📱 微信号：<span id="wx">W765029758</span></p>
+    <button onclick="copyWechat()"
+            class="px-4 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white transition font-bold">
+      点击复制
+    </button>
+    <p id="copied" class="mt-2 text-sm text-green-600 hidden">✅ 复制成功！快去转我~</p>
+  </div>
+
+  <!-- V我按钮 -->
+  <button onclick="vMe50()"
+          class="text-xl font-bold px-8 py-4 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all hover:scale-105">
+    💸 点我 V 我 50
+  </button>
+
+  <!-- 暗黑模式切换 -->
+  <button onclick="toggleDarkMode()"
+          class="mt-6 text-sm text-gray-500 dark:text-gray-400 hover:underline">
+    🌗 切换暗黑模式
+  </button>
+
+  <!-- 音效 -->
+  <audio id="sound" src="https://assets.mixkit.co/sfx/preview/mixkit-cash-register-purchase-852.mp3"></audio>
+
+  <script>
+    function vMe50() {
+      const sound = document.getElementById("sound");
+      sound.play();
+      alert("我现在就去 KFC 了🍔🍗🍟~ 多谢金主！");
+    }
+
+    function copyWechat() {
+      const wx = document.getElementById("wx").textContent;
+      navigator.clipboard.writeText(wx).then(() => {
+        document.getElementById("copied").classList.remove("hidden");
+      });
+    }
+
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle("dark");
+    }
+  </script>
+</body>
+</html>
