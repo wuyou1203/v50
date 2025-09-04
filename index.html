@@ -2,8 +2,29 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>V我50，吃肯德基</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>V我50，吃肯德基 | 快速打赏，一键达成小目标</title>
+  <meta name="description" content="🍗 V我50，一起吃肯德基！支持微信/支付宝，带统计、相册、评价、FAQ、暗黑模式等超多增强功能。">
+  <meta name="theme-color" content="#ef4444">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="V我50，吃肯德基">
+  <meta property="og:description" content="🍗 快来支持我 V50 吧！支持微信/支付宝，带统计、动画和相册。">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&q=80&auto=format&fit=crop">
+  <meta property="og:url" content="">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <script>
+    (function setInitialTheme() {
+      try {
+        const saved = localStorage.getItem('theme');
+        const preferDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (saved === 'dark' || (!saved && preferDark)) {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -12,80 +33,450 @@
         extend: {
           animation: {
             flicker: 'flicker 1.5s infinite',
+            floaty: 'floaty 6s ease-in-out infinite',
+            wiggle: 'wiggle 1.2s ease-in-out infinite',
           },
           keyframes: {
             flicker: {
               '0%, 100%': { opacity: 1 },
               '50%': { opacity: 0.4 },
+            },
+            floaty: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' }
+            },
+            wiggle: {
+              '0%, 100%': { transform: 'rotate(-1deg)' },
+              '50%': { transform: 'rotate(1deg)' }
             }
           }
         }
       }
     }
   </script>
+
   <style>
     body {
       background: linear-gradient(135deg, #fcffd4 0%, #e8ff18 100%);
-      transition: background-color 0.3s ease;
+      transition: background 0.3s ease;
     }
     .dark body {
       background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
     }
+    .glass {
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
   </style>
 </head>
-<body class="text-center text-gray-800 dark:text-gray-200 p-8 min-h-screen flex flex-col justify-center items-center">
-
-  <!-- 闪动标题 -->
-  <h1 class="text-5xl font-extrabold mb-6 animate-flicker text-red-600 dark:text-orange-400">
-    🍗 V我50，吃肯德基！
-  </h1>
-
-  <!-- 动图 -->
-  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbDZ2dTNyMGR4bGRnOGp1Znl2cXpyMGRtaHY2MWdndWZxa2RkbjJrcCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VbnUQpnihPSIgIXuZv/giphy.gif"
-       alt="money incoming" class="w-64 h-64 rounded-xl shadow-lg mb-6 border-4 border-yellow-300">
-
-  <!-- 微信号区域 -->
-  <div class="bg-white/80 dark:bg-gray-800/80 p-6 rounded-xl shadow-md backdrop-blur-md mb-6">
-    <p class="text-lg mb-2 font-mono">📱 微信号：<span id="wx">W765029758</span></p>
-    <button onclick="copyWechat()"
-            class="px-4 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white transition font-bold">
-      点击复制
-    </button>
-    <p id="copied" class="mt-2 text-sm text-green-600 hidden">✅ 复制成功！快去转我~</p>
+<body id="top" class="text-gray-800 dark:text-gray-200 min-h-screen">
+  <!-- 顶部滚动进度条 -->
+  <div class="fixed top-0 left-0 w-full h-1 bg-transparent z-50">
+    <div id="scrollProgress" class="h-full bg-gradient-to-r from-rose-500 via-amber-400 to-lime-400" style="width:0%"></div>
   </div>
 
-  <!-- V我按钮 -->
-  <button onclick="vMe50()"
-          class="text-xl font-bold px-8 py-4 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all hover:scale-105">
-    💸 点我 V 我 50
-  </button>
+  <!-- 导航 -->
+  <header class="sticky top-0 z-40">
+    <nav class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div class="mt-3"></div>
+      <div class="rounded-2xl glass bg-white/70 dark:bg-gray-900/50 shadow-md">
+        <div class="flex items-center justify-between p-4">
+          <a href="#top" class="flex items-center gap-3">
+            <span class="text-2xl">🍗</span>
+            <span class="text-xl font-extrabold">V我50</span>
+          </a>
+          <div class="hidden md:flex items-center gap-6 text-sm">
+            <a href="#why" class="hover:text-rose-500">为什么</a>
+            <a href="#stats" class="hover:text-rose-500">进度</a>
+            <a href="#gallery" class="hover:text-rose-500">相册</a>
+            <a href="#testimonials" class="hover:text-rose-500">评价</a>
+            <a href="#faq" class="hover:text-rose-500">FAQ</a>
+            <button id="navDonate" class="px-4 py-2 rounded-full bg-rose-500 hover:bg-rose-600 text-white font-semibold" onclick="openDonateModal()">V我50</button>
+            <button id="navTheme" class="px-2 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10" title="切换主题" onclick="toggleDarkMode()">🌗</button>
+          </div>
+          <button id="menuBtn" class="md:hidden px-3 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10" aria-label="菜单" onclick="toggleMobileMenu()">☰</button>
+        </div>
+        <div id="mobileMenu" class="md:hidden hidden border-t border-black/5 dark:border-white/10 p-3">
+          <div class="flex flex-col gap-3 text-sm">
+            <a href="#why" onclick="toggleMobileMenu(false)" class="py-2">为什么</a>
+            <a href="#stats" onclick="toggleMobileMenu(false)" class="py-2">进度</a>
+            <a href="#gallery" onclick="toggleMobileMenu(false)" class="py-2">相册</a>
+            <a href="#testimonials" onclick="toggleMobileMenu(false)" class="py-2">评价</a>
+            <a href="#faq" onclick="toggleMobileMenu(false)" class="py-2">FAQ</a>
+            <div class="flex items-center gap-3 pt-2">
+              <button class="flex-1 px-4 py-2 rounded-full bg-rose-500 hover:bg-rose-600 text-white font-semibold" onclick="openDonateModal()">V我50</button>
+              <button class="px-3 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10" onclick="toggleDarkMode()">🌗</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
 
-  <!-- 暗黑模式切换 -->
-  <button onclick="toggleDarkMode()"
-          class="mt-6 text-sm text-gray-500 dark:text-gray-400 hover:underline">
-    🌗 切换暗黑模式
-  </button>
+  <!-- 头图区 -->
+  <section class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-10 md:pt-16 pb-12">
+    <div class="grid md:grid-cols-2 items-center gap-8">
+      <div>
+        <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
+          <span class="bg-clip-text text-transparent bg-gradient-to-r from-rose-500 via-amber-500 to-lime-500">V我50</span>，
+          我立马吃肯德基！
+        </h1>
+        <p class="mt-4 text-gray-600 dark:text-gray-400 text-lg md:text-xl">小目标，大满足：你的 50 元，让我快乐值 +100！支持微信/支付宝，记录统计与进度，达成就有惊喜彩带🎉</p>
+        <div class="mt-6 flex flex-wrap items-center gap-3">
+          <button class="px-6 py-3 rounded-full bg-rose-500 hover:bg-rose-600 text-white font-bold shadow-lg" onclick="openDonateModal()">💸 立即 V 我 50</button>
+          <a href="#why" class="px-6 py-3 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20">了解更多</a>
+        </div>
+        <div class="mt-6 text-sm text-gray-500 dark:text-gray-400">已支持 <span id="statCount" class="font-semibold">0</span> 次，共 <span id="statTotal" class="font-semibold">¥0</span></div>
+      </div>
+      <div class="relative">
+        <img class="w-full max-w-md md:max-w-full mx-auto rounded-3xl shadow-2xl border-4 border-yellow-300 animate-floaty" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbDZ2dTNyMGR4bGRnOGp1Znl2cXpyMGRtaHY2MWdndWZxa2RkbjJrcCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VbnUQpnihPSIgIXuZv/giphy.gif" alt="money incoming">
+        <div class="absolute -bottom-4 -right-3 bg-white/80 dark:bg-gray-800/80 glass rounded-xl px-4 py-2 text-sm shadow flex items-center gap-2">
+          <span class="text-amber-500">★</span> <span>今日想吃：吮指原味鸡</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <!-- 音效 -->
+  <!-- 为什么 -->
+  <section id="why" class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="p-6 rounded-2xl glass bg-white/70 dark:bg-gray-900/50 shadow">
+        <h3 class="text-xl font-bold mb-2">好吃到跳舞</h3>
+        <p class="text-gray-600 dark:text-gray-400">肯德基快乐指数飙升，V我50 立刻安排，能量加满！</p>
+      </div>
+      <div class="p-6 rounded-2xl glass bg-white/70 dark:bg-gray-900/50 shadow">
+        <h3 class="text-xl font-bold mb-2">互动更有趣</h3>
+        <p class="text-gray-600 dark:text-gray-400">支持即触发彩带和音效，见证进度条前进的爽感～</p>
+      </div>
+      <div class="p-6 rounded-2xl glass bg-white/70 dark:bg-gray-900/50 shadow">
+        <h3 class="text-xl font-bold mb-2">透明有仪式感</h3>
+        <p class="text-gray-600 dark:text-gray-400">本地统计次数与总额，还能设定目标，达成就庆祝！</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 统计与进度 -->
+  <section id="stats" class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
+    <div class="rounded-2xl glass bg-white/70 dark:bg-gray-900/50 shadow p-6">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-extrabold">小目标进度</h2>
+          <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">目标金额：<span id="goalAmount">¥500</span> · 已达成：<span id="goalPercent">0%</span></p>
+        </div>
+        <div class="flex items-center gap-2 text-sm">
+          <label for="goalInput" class="text-gray-600 dark:text-gray-400">自定义目标</label>
+          <input id="goalInput" type="number" min="50" step="50" class="w-28 rounded-lg bg-black/5 dark:bg-white/10 px-3 py-2 outline-none" placeholder="¥500">
+          <button class="px-3 py-2 rounded-lg bg-black/80 text-white hover:bg-black dark:bg-white/20 dark:hover:bg-white/30" onclick="saveGoal()">保存</button>
+        </div>
+      </div>
+      <div class="mt-4 h-3 w-full bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
+        <div id="goalProgress" class="h-full bg-gradient-to-r from-rose-500 via-amber-400 to-lime-400" style="width:0%"></div>
+      </div>
+      <div class="mt-4 text-sm text-gray-600 dark:text-gray-400">共支持 <span id="statCount2" class="font-semibold">0</span> 次，累计 <span id="statTotal2" class="font-semibold">¥0</span></div>
+    </div>
+  </section>
+
+  <!-- 打赏方式 -->
+  <section id="contact" class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid md:grid-cols-2 gap-6 items-center">
+      <div class="rounded-2xl glass bg-white/70 dark:bg-gray-900/50 shadow p-6">
+        <h3 class="text-xl font-bold">微信号</h3>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">📱 <span id="wx">W765029758</span></p>
+        <div class="mt-3 flex gap-3">
+          <button class="px-4 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white font-bold" onclick="copyWechat()">复制微信号</button>
+          <button class="px-4 py-2 rounded-lg bg-rose-500 hover:bg-rose-600 text-white font-bold" onclick="openDonateModal()">去打赏</button>
+        </div>
+        <p id="copied" class="mt-2 text-sm text-green-600 hidden">✅ 复制成功！快去转我~</p>
+      </div>
+      <div class="rounded-2xl glass bg-white/70 dark:bg-gray-900/50 shadow p-6">
+        <h3 class="text-xl font-bold">二维码</h3>
+        <div class="mt-3 flex items-center gap-4">
+          <button id="tabWx" class="px-3 py-2 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20" onclick="switchPay('wx')">微信</button>
+          <button id="tabAli" class="px-3 py-2 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20" onclick="switchPay('ali')">支付宝</button>
+        </div>
+        <div class="mt-4">
+          <img id="qr" alt="pay qr" class="w-48 h-48 rounded-xl shadow border border-black/10 dark:border-white/10" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=W765029758">
+          <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">注：示例二维码为微信号文本二维码，可替换为收款码图片。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 相册 -->
+  <section id="gallery" class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
+    <h2 class="text-2xl font-extrabold mb-4">美味相册</h2>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <img class="rounded-xl shadow object-cover aspect-[4/3]" src="https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&q=80&auto=format&fit=crop" alt="kfc-1">
+      <img class="rounded-xl shadow object-cover aspect-[4/3]" src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&q=80&auto=format&fit=crop" alt="kfc-2">
+      <img class="rounded-xl shadow object-cover aspect-[4/3]" src="https://images.unsplash.com/photo-1543353071-10c8ba85a904?w=800&q=80&auto=format&fit=crop" alt="kfc-3">
+      <img class="rounded-xl shadow object-cover aspect-[4/3]" src="https://images.unsplash.com/photo-1604908554027-8d7b32c4405c?w=800&q=80&auto=format&fit=crop" alt="kfc-4">
+      <img class="rounded-xl shadow object-cover aspect-[4/3]" src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=800&q=80&auto=format&fit=crop" alt="kfc-5">
+      <img class="rounded-xl shadow object-cover aspect-[4/3]" src="https://images.unsplash.com/photo-1546039907-7f6a1dca9c49?w=800&q=80&auto=format&fit=crop" alt="kfc-6">
+    </div>
+  </section>
+
+  <!-- 评价轮播 -->
+  <section id="testimonials" class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
+    <h2 class="text-2xl font-extrabold mb-4">金主好评</h2>
+    <div class="rounded-2xl glass bg-white/70 dark:bg-gray-900/50 shadow p-6">
+      <div id="carousel" class="relative overflow-hidden">
+        <div id="carouselInner" class="whitespace-nowrap transition-transform duration-500">
+          <div class="inline-block align-top w-full">
+            <blockquote class="text-lg">“50 花得值，彩带一放太有仪式感了！” — 小陈</blockquote>
+          </div>
+          <div class="inline-block align-top w-full">
+            <blockquote class="text-lg">“进度条前进那一下，爽！等你达成目标～” — 阿东</blockquote>
+          </div>
+          <div class="inline-block align-top w-full">
+            <blockquote class="text-lg">“页面好看又好玩，我也要做一个～” — Yuki</blockquote>
+          </div>
+        </div>
+        <div class="flex justify-center gap-2 mt-4 text-xs">
+          <button class="px-2 py-1 rounded bg-black/5 dark:bg-white/10" onclick="setSlide(0)">1</button>
+          <button class="px-2 py-1 rounded bg-black/5 dark:bg-white/10" onclick="setSlide(1)">2</button>
+          <button class="px-2 py-1 rounded bg-black/5 dark:bg-white/10" onclick="setSlide(2)">3</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
+    <h2 class="text-2xl font-extrabold mb-4">常见问题</h2>
+    <div class="space-y-3">
+      <details class="rounded-xl glass bg-white/70 dark:bg-gray-900/50 shadow p-4">
+        <summary class="cursor-pointer font-semibold">真的会去吃肯德基吗？</summary>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">当然！并且会在进度达成后放烟花和彩带庆祝～</p>
+      </details>
+      <details class="rounded-xl glass bg-white/70 dark:bg-gray-900/50 shadow p-4">
+        <summary class="cursor-pointer font-semibold">如何更新二维码？</summary>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">替换页面中图片地址为你的收款码图片或动态二维码链接即可。</p>
+      </details>
+      <details class="rounded-xl glass bg-white/70 dark:bg-gray-900/50 shadow p-4">
+        <summary class="cursor-pointer font-semibold">数据会不会丢？</summary>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">本地使用 localStorage 持久化，清理浏览器数据或更换设备会重置。</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12 text-sm text-gray-500 dark:text-gray-400">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+      <p>© <span id="year"></span> V我50. 祝你天天吃到想吃的！</p>
+      <div class="flex items-center gap-3">
+        <button class="px-3 py-2 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20" onclick="sharePage()">🔗 分享</button>
+        <a class="px-3 py-2 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20" href="#top">返回顶部</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 悬浮按钮 -->
+  <div class="fixed right-4 bottom-4 z-40 flex flex-col gap-3">
+    <button class="rounded-full shadow-lg px-4 py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold" onclick="openDonateModal()">V我50</button>
+    <button id="backTop" class="hidden rounded-full shadow-lg w-11 h-11 flex items-center justify-center bg-black/80 text-white hover:bg-black" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+  </div>
+
+  <!-- 打赏弹窗 -->
+  <div id="donateModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/50" onclick="closeDonateModal()"></div>
+    <div class="relative mx-auto mt-24 max-w-md px-4">
+      <div class="rounded-2xl glass bg-white/90 dark:bg-gray-900/80 shadow-xl p-6">
+        <div class="flex items-start justify-between">
+          <h3 class="text-xl font-extrabold">打赏我一份肯德基</h3>
+          <button class="px-3 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10" onclick="closeDonateModal()">✕</button>
+        </div>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">选择方式并转账成功后点击“我已转账”，我会立刻放彩带庆祝～</p>
+        <div class="mt-4 flex items-center gap-3">
+          <button id="mTabWx" class="px-3 py-2 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20" onclick="switchPay('wx')">微信</button>
+          <button id="mTabAli" class="px-3 py-2 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20" onclick="switchPay('ali')">支付宝</button>
+        </div>
+        <div class="mt-4 flex flex-col items-center">
+          <img id="mQr" class="w-48 h-48 rounded-xl shadow border border-black/10 dark:border-white/10" alt="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=W765029758">
+          <div class="mt-4 grid grid-cols-3 gap-2 w-full">
+            <button class="px-3 py-2 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20" onclick="setAmount(20)">¥20</button>
+            <button class="px-3 py-2 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20" onclick="setAmount(50)">¥50</button>
+            <button class="px-3 py-2 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20" onclick="setAmount(100)">¥100</button>
+          </div>
+          <div class="mt-3 w-full flex items-center gap-2">
+            <input id="amountInput" type="number" min="1" class="flex-1 rounded-lg bg-black/5 dark:bg-white/10 px-3 py-2 outline-none" value="50">
+            <button class="px-4 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white font-bold" onclick="copiedPay()">复制金额</button>
+          </div>
+          <button class="mt-4 px-5 py-3 rounded-full bg-rose-500 hover:bg-rose-600 text-white font-extrabold w-full" onclick="confirmPaid()">✅ 我已转账</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 音效 & 彩带 -->
   <audio id="sound" src="https://assets.mixkit.co/sfx/preview/mixkit-cash-register-purchase-852.mp3"></audio>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <script>
-    function vMe50() {
-      const sound = document.getElementById("sound");
-      sound.play();
-      alert("我现在就去 KFC 了🍔🍗🍟~ 多谢金主！");
+    const store = {
+      keyCount: 'v50.count',
+      keyTotal: 'v50.total',
+      keyGoal: 'v50.goal',
+      keyTheme: 'theme'
+    };
+
+    function $(id) { return document.getElementById(id); }
+
+    function initStats() {
+      const count = parseInt(localStorage.getItem(store.keyCount) || '0', 10);
+      const total = parseInt(localStorage.getItem(store.keyTotal) || '0', 10);
+      const goal = parseInt(localStorage.getItem(store.keyGoal) || '500', 10);
+      updateStatsUI(count, total, goal);
+    }
+
+    function updateStatsUI(count, total, goal) {
+      // 顶部 hero
+      $('statCount').textContent = String(count);
+      $('statTotal').textContent = `¥${total}`;
+      // stats 区域
+      $('statCount2').textContent = String(count);
+      $('statTotal2').textContent = `¥${total}`;
+      $('goalAmount').textContent = `¥${goal}`;
+      const percent = Math.min(100, Math.round((total / goal) * 100));
+      $('goalPercent').textContent = `${percent}%`;
+      $('goalProgress').style.width = `${percent}%`;
+      $('goalInput').value = String(goal);
+    }
+
+    function saveGoal() {
+      const val = parseInt(($('goalInput').value || '0'), 10);
+      if (val > 0) {
+        localStorage.setItem(store.keyGoal, String(val));
+        const count = parseInt(localStorage.getItem(store.keyCount) || '0', 10);
+        const total = parseInt(localStorage.getItem(store.keyTotal) || '0', 10);
+        updateStatsUI(count, total, val);
+      }
+    }
+
+    function openDonateModal() {
+      $('donateModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDonateModal() {
+      $('donateModal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function switchPay(type) {
+      const wxUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=W765029758';
+      const aliUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=ALIPAY:VME50';
+      const url = type === 'ali' ? aliUrl : wxUrl;
+      const els = ['qr','mQr'];
+      els.forEach(id => { const el = $(id); if (el) el.src = url; });
+      ['tabWx','mTabWx'].forEach(id => { const el = $(id); if (el) el.classList.toggle('bg-rose-500', type==='wx'); if (el) el.classList.toggle('text-white', type==='wx'); });
+      ['tabAli','mTabAli'].forEach(id => { const el = $(id); if (el) el.classList.toggle('bg-rose-500', type==='ali'); if (el) el.classList.toggle('text-white', type==='ali'); });
+    }
+
+    function setAmount(v) {
+      $('amountInput').value = String(v);
+    }
+
+    function copiedPay() {
+      const v = $('amountInput').value || '50';
+      navigator.clipboard.writeText(v).then(() => showToast(`已复制金额：¥${v}`));
+    }
+
+    function confirmPaid() {
+      const sound = $('sound');
+      try { sound.currentTime = 0; sound.play(); } catch(e){}
+      const add = parseInt(($('amountInput').value || '50'), 10);
+      const count = parseInt(localStorage.getItem(store.keyCount) || '0', 10) + 1;
+      const total = parseInt(localStorage.getItem(store.keyTotal) || '0', 10) + add;
+      localStorage.setItem(store.keyCount, String(count));
+      localStorage.setItem(store.keyTotal, String(total));
+      const goal = parseInt(localStorage.getItem(store.keyGoal) || '500', 10);
+      updateStatsUI(count, total, goal);
+      fireConfetti();
+      closeDonateModal();
+      showToast('收到！谢谢金主～');
     }
 
     function copyWechat() {
-      const wx = document.getElementById("wx").textContent;
+      const wx = $('wx').textContent;
       navigator.clipboard.writeText(wx).then(() => {
-        document.getElementById("copied").classList.remove("hidden");
+        $('copied').classList.remove('hidden');
+        showToast('微信号已复制');
       });
     }
 
     function toggleDarkMode() {
-      document.documentElement.classList.toggle("dark");
+      const root = document.documentElement;
+      const willDark = !root.classList.contains('dark');
+      root.classList.toggle('dark', willDark);
+      try { localStorage.setItem(store.keyTheme, willDark ? 'dark' : 'light'); } catch(e){}
     }
+
+    function toggleMobileMenu(force) {
+      const menu = $('mobileMenu');
+      if (typeof force === 'boolean') {
+        menu.classList.toggle('hidden', !force);
+      } else {
+        menu.classList.toggle('hidden');
+      }
+    }
+
+    function sharePage() {
+      const title = 'V我50，吃肯德基！';
+      const text = '来支持我小目标吧～ 支持即放彩带🎉';
+      const url = location.href;
+      if (navigator.share) {
+        navigator.share({ title, text, url }).catch(()=>{});
+      } else {
+        navigator.clipboard.writeText(url);
+        showToast('链接已复制，快去分享吧');
+      }
+    }
+
+    function fireConfetti() {
+      if (typeof confetti !== 'function') return;
+      const defaults = { spread: 360, ticks: 80, gravity: 0.7, decay: 0.94, startVelocity: 30 }; 
+      confetti(Object.assign({ particleCount: 80, origin: { y: 0.6 } }, defaults));
+      confetti(Object.assign({ particleCount: 120, origin: { y: 0.6 } }, defaults));
+    }
+
+    function showToast(msg) {
+      let t = $('toast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'toast';
+        t.className = 'fixed left-1/2 -translate-x-1/2 bottom-6 z-50 px-4 py-2 rounded-full bg-black/80 text-white text-sm shadow';
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.style.opacity = '1';
+      setTimeout(() => { t.style.opacity = '0'; }, 1800);
+    }
+
+    function onScroll() {
+      const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      $('scrollProgress').style.width = `${percent}%`;
+      $('backTop').classList.toggle('hidden', scrollTop < 300);
+    }
+
+    // 评价轮播
+    let currentSlide = 0;
+    function setSlide(i) {
+      currentSlide = i % 3;
+      const inner = $('carouselInner');
+      if (inner) inner.style.transform = `translateX(-${currentSlide * 100}%)`;
+    }
+    setInterval(() => setSlide((currentSlide + 1) % 3), 5000);
+
+    // 初始化
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('load', () => {
+      $('year').textContent = new Date().getFullYear();
+      initStats();
+      onScroll();
+      switchPay('wx');
+    });
   </script>
 </body>
 </html>
